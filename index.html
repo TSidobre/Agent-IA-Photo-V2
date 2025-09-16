@@ -105,8 +105,15 @@
       <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
     </div>
 
-    <label for="description">Description de l’image :</label>
-    <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" required />
+    <div id="descriptionContainer">
+      <label for="description">Description de l’image :</label>
+      <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" />
+    </div>
+
+    <div id="backgroundColorContainer" style="display: none;">
+      <label for="backgroundColor">Choix de la couleur du fond :</label>
+      <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Beige clair, bleu pastel..." />
+    </div>
 
     <label for="format">Format souhaité :</label>
     <select id="format" name="format">
@@ -128,14 +135,21 @@
     const imageUploadContainer = document.getElementById("imageUploadContainer");
     const imageUploadInput = document.getElementById("imageUpload");
 
+    const descriptionContainer = document.getElementById("descriptionContainer");
+    const backgroundColorContainer = document.getElementById("backgroundColorContainer");
+
     categorieSelect.addEventListener("change", function () {
-      if (categorieSelect.value === "branding") {
-        imageUploadContainer.style.display = "block";
-        imageUploadInput.required = true;
-      } else {
-        imageUploadContainer.style.display = "none";
-        imageUploadInput.required = false;
-      }
+      const value = categorieSelect.value;
+
+      // Affiche le champ upload si catégorie branding
+      imageUploadContainer.style.display = value === "branding" ? "block" : "none";
+      imageUploadInput.required = value === "branding";
+
+      // Masque le champ description si branding
+      descriptionContainer.style.display = value === "branding" ? "none" : "block";
+
+      // Affiche champ couleur fond si objet 3D
+      backgroundColorContainer.style.display = value === "objet3d" ? "block" : "none";
     });
 
     document.getElementById("imageForm").addEventListener("submit", async function (e) {
@@ -167,7 +181,7 @@
 
             const link = document.createElement("a");
             link.href = result.downloadUrls?.[index] || url;
-            link.innerText = "📅 Télécharger l’image";
+            link.innerText = "📥 Télécharger l’image";
             link.download = "image-generee.jpg";
 
             container.appendChild(img);
@@ -175,10 +189,24 @@
             resultContainer.appendChild(container);
           });
         } else {
-          resultContainer.innerText = "Aucune image générée.";
+          resultContainer.innerHTML = `
+            <p>✅ Votre image est en cours de traitement.<br>
+            Elle sera bientôt disponible ici :</p>
+            <a href="https://drive.google.com/drive/folders/1gXCBwobAkSlLqOjzluAQqRe6OlkCFyT9?usp=sharing" target="_blank">
+              📁 Ouvrir le dossier Drive
+            </a>
+            <p>⏳ Veuillez patienter quelques instants...</p>
+          `;
         }
       } catch (error) {
-        resultContainer.innerHTML = "Erreur lors de la génération.";
+        resultContainer.innerHTML = `
+          <p>✅ Votre image est en cours de traitement.<br>
+          Elle sera bientôt disponible ici :</p>
+          <a href="https://drive.google.com/drive/folders/1gXCBwobAkSlLqOjzluAQqRe6OlkCFyT9?usp=sharing" target="_blank">
+            📁 Ouvrir le dossier Drive
+          </a>
+          <p>⏳ Veuillez patienter quelques instants...</p>
+        `;
         console.error(error);
       }
     });
