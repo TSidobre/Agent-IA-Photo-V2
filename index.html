@@ -35,7 +35,8 @@
     }
 
     select,
-    input[type="text"] {
+    input[type="text"],
+    input[type="file"] {
       width: 100%;
       padding: 10px;
       font-size: 15px;
@@ -94,8 +95,15 @@
       <option value="">-- Choisir une catégorie --</option>
       <option value="interieur">🏠 Intérieur</option>
       <option value="humain">👤 Humain</option>
+      <option value="objet3d">🧩 Objet 3D</option>
+      <option value="branding">🌟 Transformer en image de marque</option>
       <option value="autre">✨ Autre</option>
     </select>
+
+    <div id="imageUploadContainer" style="display: none;">
+      <label for="imageUpload">Joindre une image :</label>
+      <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
+    </div>
 
     <label for="description">Description de l’image :</label>
     <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" required />
@@ -116,25 +124,35 @@
   <div id="result"></div>
 
   <script>
+    const categorieSelect = document.getElementById("categorie");
+    const imageUploadContainer = document.getElementById("imageUploadContainer");
+    const imageUploadInput = document.getElementById("imageUpload");
+
+    categorieSelect.addEventListener("change", function () {
+      if (categorieSelect.value === "branding") {
+        imageUploadContainer.style.display = "block";
+        imageUploadInput.required = true;
+      } else {
+        imageUploadContainer.style.display = "none";
+        imageUploadInput.required = false;
+      }
+    });
+
     document.getElementById("imageForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const form = e.target;
       const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
 
       const resultContainer = document.getElementById("result");
       resultContainer.innerHTML = "⏳ Génération en cours...";
 
-      const webhookUrl = "https://hook.eu1.make.com/4g83ofxhrb50jijxk9xurp7ffogba87m"; // remplace avec ton vrai webhook unique
+      const webhookUrl = "https://hook.eu1.make.com/4g83ofxhrb50jijxk9xurp7ffogba87m"; // à adapter
 
       try {
         const response = await fetch(webhookUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
+          body: formData
         });
 
         const result = await response.json();
@@ -143,26 +161,24 @@
         if (result.images && result.images.length > 0) {
           result.images.forEach((url, index) => {
             const container = document.createElement("div");
-
             const img = document.createElement("img");
             img.src = url;
             img.alt = "Image générée";
 
             const link = document.createElement("a");
             link.href = result.downloadUrls?.[index] || url;
-            link.innerText = "📥 Télécharger l’image";
-            link.download = "image-generée.jpg";
+            link.innerText = "📅 Télécharger l’image";
+            link.download = "image-generee.jpg";
 
             container.appendChild(img);
             container.appendChild(link);
             resultContainer.appendChild(container);
           });
         } else {
-          resultContainer.innerText = " ";
+          resultContainer.innerText = "Aucune image générée.";
         }
-
       } catch (error) {
-        resultContainer.innerHTML = " ";
+        resultContainer.innerHTML = "Erreur lors de la génération.";
         console.error(error);
       }
     });
