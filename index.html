@@ -36,13 +36,20 @@
 
     select,
     input[type="text"],
-    input[type="file"] {
+    input[type="file"],
+    textarea {
       width: 100%;
       padding: 10px;
       font-size: 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
       box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      font-family: Arial, sans-serif;
     }
 
     button {
@@ -90,13 +97,14 @@
   <h1>Agent IA – Générateur d'images</h1>
 
   <form id="imageForm">
-    <label for="categorie">Catégorie d’image :</label>
+    <label for="categorie">Catégorie d'image :</label>
     <select id="categorie" name="categorie" required>
       <option value="">-- Choisir une catégorie --</option>
       <option value="interieur">🏠 Intérieur</option>
       <option value="humain">👤 Humain</option>
       <option value="objet3d">🧩 Objet 3D</option>
       <option value="branding">🌟 Transformer en image de marque</option>
+      <option value="article">📝 Génération d'article</option>
       <option value="autre">✨ Autre</option>
     </select>
 
@@ -106,8 +114,13 @@
     </div>
 
     <div id="descriptionContainer">
-      <label for="description">Description de l’image :</label>
+      <label for="description">Description de l'image :</label>
       <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" />
+    </div>
+
+    <div id="articleContainer" style="display: none;">
+      <label for="articleComplet">Article au complet :</label>
+      <textarea id="articleComplet" name="articleComplet" placeholder="Saisissez votre article complet ici..."></textarea>
     </div>
 
     <div id="backgroundColorContainer" style="display: none;">
@@ -115,17 +128,21 @@
       <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Beige clair, bleu pastel..." />
     </div>
 
-    <label for="format">Format souhaité :</label>
-    <select id="format" name="format">
-      <option value="1:1">Carré (1:1)</option>
-      <option value="9:16">Vertical (9:16)</option>
-      <option value="16:9">Horizontal (16:9)</option>
-    </select>
+    <div id="formatContainer">
+      <label for="format">Format souhaité :</label>
+      <select id="format" name="format">
+        <option value="1:1">Carré (1:1)</option>
+        <option value="9:16">Vertical (9:16)</option>
+        <option value="16:9">Horizontal (16:9)</option>
+      </select>
+    </div>
 
-    <label for="cible">Cible ou contexte :</label>
-    <input type="text" id="cible" name="cible" placeholder="Ex. Publication Instagram, plaquette, etc." />
+    <div id="cibleContainer">
+      <label for="cible">Cible ou contexte :</label>
+      <input type="text" id="cible" name="cible" placeholder="Ex. Publication Instagram, plaquette, etc." />
+    </div>
 
-    <button type="submit">🚀 Générer l’image</button>
+    <button type="submit">🚀 Générer l'image</button>
   </form>
 
   <div id="result"></div>
@@ -136,7 +153,11 @@
     const imageUploadInput = document.getElementById("imageUpload");
 
     const descriptionContainer = document.getElementById("descriptionContainer");
+    const articleContainer = document.getElementById("articleContainer");
+    const articleCompletInput = document.getElementById("articleComplet");
     const backgroundColorContainer = document.getElementById("backgroundColorContainer");
+    const formatContainer = document.getElementById("formatContainer");
+    const cibleContainer = document.getElementById("cibleContainer");
 
     categorieSelect.addEventListener("change", function () {
       const value = categorieSelect.value;
@@ -145,11 +166,19 @@
       imageUploadContainer.style.display = value === "branding" ? "block" : "none";
       imageUploadInput.required = value === "branding";
 
-      // Masque le champ description si branding
-      descriptionContainer.style.display = value === "branding" ? "none" : "block";
+      // Masque le champ description si branding ou article
+      descriptionContainer.style.display = (value === "branding" || value === "article") ? "none" : "block";
+
+      // Affiche le champ article si catégorie article
+      articleContainer.style.display = value === "article" ? "block" : "none";
+      articleCompletInput.required = value === "article";
 
       // Affiche champ couleur fond si objet 3D
       backgroundColorContainer.style.display = value === "objet3d" ? "block" : "none";
+
+      // Masque format et cible si catégorie article
+      formatContainer.style.display = value === "article" ? "none" : "block";
+      cibleContainer.style.display = value === "article" ? "none" : "block";
     });
 
     document.getElementById("imageForm").addEventListener("submit", async function (e) {
@@ -181,7 +210,7 @@
 
             const link = document.createElement("a");
             link.href = result.downloadUrls?.[index] || url;
-            link.innerText = "📥 Télécharger l’image";
+            link.innerText = "📥 Télécharger l'image";
             link.download = "image-generee.jpg";
 
             container.appendChild(img);
