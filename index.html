@@ -5,33 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Générateur d'images - Mon Chasseur Immo</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f6f8fa;
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       padding: 40px 20px;
-      max-width: 600px;
-      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
       text-align: center;
-      color: #003366;
+      color: #fff;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
     form {
-      background-color: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
     label {
-      font-weight: bold;
+      font-weight: 600;
       display: block;
       margin-top: 20px;
-      margin-bottom: 6px;
-      color: #222;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 0.95rem;
     }
 
     select,
@@ -39,119 +62,280 @@
     input[type="file"],
     textarea {
       width: 100%;
-      padding: 10px;
+      padding: 12px 15px;
       font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
     textarea {
       min-height: 150px;
       resize: vertical;
-      font-family: Arial, sans-serif;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
     }
 
     button {
       margin-top: 30px;
-      padding: 12px;
+      padding: 15px;
       width: 100%;
-      background-color: #0077cc;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
 
     button:hover {
-      background-color: #005fa3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     #result {
       margin-top: 30px;
+    }
+
+    /* Loading animation */
+    .loading-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 50px 35px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       text-align: center;
     }
 
-    #result img {
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .spinner {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 30px;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
-    #result a {
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.3rem;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .loading-subtext {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Success result */
+    .success-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px 35px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      animation: scaleIn 0.5s ease-out;
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .success-title {
+      font-size: 1.8rem;
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .success-message {
+      color: #666;
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+
+    .btn-primary {
       display: inline-block;
-      margin-top: 10px;
-      color: #0077cc;
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       text-decoration: none;
-      font-weight: bold;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     }
 
-    #result a:hover {
-      text-decoration: underline;
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 15px 40px;
+      background: #fff;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin: 10px;
+      transition: all 0.3s ease;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #f8f9ff;
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 25px auto;
+      border-radius: 2px;
+    }
+
+    .folder-info {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f8f9ff;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .folder-info-title {
+      font-size: 0.95rem;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .buttons-row {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Agent IA – Générateur d'images</h1>
+  <div class="container">
+    <h1>✨ Agent IA – Générateur d'images</h1>
 
-  <form id="imageForm">
-    <label for="categorie">Catégorie d'image :</label>
-    <select id="categorie" name="categorie" required>
-      <option value="">-- Choisir une catégorie --</option>
-      <option value="interieur">🏠 Intérieur</option>
-      <option value="humain">👤 Humain</option>
-      <option value="objet3d">🧩 Objet 3D</option>
-      <option value="branding">🌟 Transformer en image de marque</option>
-      <option value="article">📝 Génération d'article</option>
-      <option value="autre">✨ Autre</option>
-    </select>
-
-    <div id="imageUploadContainer" style="display: none;">
-      <label for="imageUpload">Joindre une image :</label>
-      <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
-    </div>
-
-    <div id="descriptionContainer">
-      <label for="description">Description de l'image :</label>
-      <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" />
-    </div>
-
-    <div id="articleContainer" style="display: none;">
-      <label for="articleComplet">Article au complet :</label>
-      <textarea id="articleComplet" name="articleComplet" placeholder="Saisissez votre article complet ici..."></textarea>
-    </div>
-
-    <div id="backgroundColorContainer" style="display: none;">
-      <label for="backgroundColor">Choix de la couleur du fond :</label>
-      <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Beige clair, bleu pastel..." />
-    </div>
-
-    <div id="formatContainer">
-      <label for="format">Format souhaité :</label>
-      <select id="format" name="format">
-        <option value="1:1">Carré (1:1)</option>
-        <option value="9:16">Vertical (9:16)</option>
-        <option value="16:9">Horizontal (16:9)</option>
+    <form id="imageForm">
+      <label for="categorie">Catégorie d'image :</label>
+      <select id="categorie" name="categorie" required>
+        <option value="">-- Choisir une catégorie --</option>
+        <option value="interieur">🏠 Intérieur</option>
+        <option value="humain">👤 Humain</option>
+        <option value="objet3d">🧩 Objet 3D</option>
+        <option value="branding">🌟 Transformer en image de marque</option>
+        <option value="article">📝 Génération d'article</option>
+        <option value="autre">✨ Autre</option>
       </select>
-    </div>
 
-    <div id="cibleContainer">
-      <label for="cible">Cible ou contexte :</label>
-      <input type="text" id="cible" name="cible" placeholder="Ex. Publication Instagram, plaquette, etc." />
-    </div>
+      <div id="imageUploadContainer" style="display: none;">
+        <label for="imageUpload">Joindre une image :</label>
+        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
+      </div>
 
-    <button type="submit">🚀 Générer l'image</button>
-  </form>
+      <div id="descriptionContainer">
+        <label for="description">Description de l'image :</label>
+        <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" />
+      </div>
 
-  <div id="result"></div>
+      <div id="articleContainer" style="display: none;">
+        <label for="articleComplet">Article au complet :</label>
+        <textarea id="articleComplet" name="articleComplet" placeholder="Saisissez votre article complet ici..."></textarea>
+      </div>
+
+      <div id="backgroundColorContainer" style="display: none;">
+        <label for="backgroundColor">Choix de la couleur du fond :</label>
+        <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Beige clair, bleu pastel..." />
+      </div>
+
+      <div id="formatContainer">
+        <label for="format">Format souhaité :</label>
+        <select id="format" name="format">
+          <option value="1:1">Carré (1:1)</option>
+          <option value="9:16">Vertical (9:16)</option>
+          <option value="16:9">Horizontal (16:9)</option>
+        </select>
+      </div>
+
+      <div id="cibleContainer">
+        <label for="cible">Cible ou contexte :</label>
+        <input type="text" id="cible" name="cible" placeholder="Ex. Publication Instagram, plaquette, etc." />
+      </div>
+
+      <button type="submit">🚀 Générer l'image</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
 
   <script>
     const categorieSelect = document.getElementById("categorie");
     const imageUploadContainer = document.getElementById("imageUploadContainer");
     const imageUploadInput = document.getElementById("imageUpload");
-
     const descriptionContainer = document.getElementById("descriptionContainer");
     const articleContainer = document.getElementById("articleContainer");
     const articleCompletInput = document.getElementById("articleComplet");
@@ -159,24 +343,37 @@
     const formatContainer = document.getElementById("formatContainer");
     const cibleContainer = document.getElementById("cibleContainer");
 
+    const categoryLinks = {
+      "article": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/EnrDSw-fwEtKs-rsNqdn76kBwUjxHSu83hf1JW9SOhaDyQ?e=b3njuJ",
+      "branding": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/EhQSRDobqm5EiLozfn3qbLIBM5VjJXvHFdPO3ayleTCjYw?e=LcaaE8",
+      "humain": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/Evp1KBizQZ1Dn_o3CqfldiMBfj4Y95Yf6i6Msyzd4dBvHw?e=HEEXht",
+      "interieur": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/EpoKQ1lrBg5FmFgFuLYE8o8BkCGmQTgzkaSLdv99e2BIAw?e=Y53fKY",
+      "objet3d": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/EmF-IYSb0s5BgLhSjSMS_Q0BEt0oDuwtL-JQlnK47LT5mw?e=dT3Hoh",
+      "autre": "https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/Epzfa05Mkf5DnqA-kTB47jIBBvUEHKiMyqx6tK7yfA6Ehg?e=0SbdOC"
+    };
+
+    const categoryNames = {
+      "article": "Génération d'articles",
+      "branding": "Images de marque",
+      "humain": "Humains",
+      "interieur": "Intérieurs",
+      "objet3d": "Objets 3D",
+      "autre": "Autres générations"
+    };
+
     categorieSelect.addEventListener("change", function () {
       const value = categorieSelect.value;
 
-      // Affiche le champ upload si catégorie branding
       imageUploadContainer.style.display = value === "branding" ? "block" : "none";
       imageUploadInput.required = value === "branding";
 
-      // Masque le champ description si branding ou article
       descriptionContainer.style.display = (value === "branding" || value === "article") ? "none" : "block";
 
-      // Affiche le champ article si catégorie article
       articleContainer.style.display = value === "article" ? "block" : "none";
       articleCompletInput.required = value === "article";
 
-      // Affiche champ couleur fond si objet 3D
       backgroundColorContainer.style.display = value === "objet3d" ? "block" : "none";
 
-      // Masque format et cible si catégorie article
       formatContainer.style.display = value === "article" ? "none" : "block";
       cibleContainer.style.display = value === "article" ? "none" : "block";
     });
@@ -186,11 +383,20 @@
 
       const form = e.target;
       const formData = new FormData(form);
+      const selectedCategory = categorieSelect.value;
 
       const resultContainer = document.getElementById("result");
-      resultContainer.innerHTML = "⏳ Génération en cours...";
+      
+      // Loading state
+      resultContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <div class="loading-text pulse">Génération en cours...</div>
+          <div class="loading-subtext">L'IA crée votre image personnalisée. Cela peut prendre quelques instants.</div>
+        </div>
+      `;
 
-      const webhookUrl = "https://hook.eu1.make.com/4g83ofxhrb50jijxk9xurp7ffogba87m"; // à adapter
+      const webhookUrl = "https://hook.eu1.make.com/4g83ofxhrb50jijxk9xurp7ffogba87m";
 
       try {
         const response = await fetch(webhookUrl, {
@@ -199,42 +405,51 @@
         });
 
         const result = await response.json();
-        resultContainer.innerHTML = "";
+        
+        // Success state
+        const categoryFolderLink = categoryLinks[selectedCategory];
+        const categoryName = categoryNames[selectedCategory];
 
-        if (result.images && result.images.length > 0) {
-          result.images.forEach((url, index) => {
-            const container = document.createElement("div");
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = "Image générée";
-
-            const link = document.createElement("a");
-            link.href = result.downloadUrls?.[index] || url;
-            link.innerText = "📥 Télécharger l'image";
-            link.download = "image-generee.jpg";
-
-            container.appendChild(img);
-            container.appendChild(link);
-            resultContainer.appendChild(container);
-          });
-        } else {
-          resultContainer.innerHTML = `
-            <p>✅ Votre image est en cours de traitement.<br>
-            Elle sera bientôt disponible ici :</p>
-            <a href="https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/Er4Mtb4PmOVOiHfUrmX7-b8Bwr79GDa62NEd1Nr20ROSYQ?e=MJ6Ddh">
-              📁 Ouvrir le dossier Drive
-            </a>
-            <p>⏳ Veuillez patienter quelques instants...</p>
-          `;
-        }
-      } catch (error) {
         resultContainer.innerHTML = `
-          <p>✅ Votre image est en cours de traitement.<br>
-          Elle sera bientôt disponible ici :</p>
-          <a href="https://netacheteur.sharepoint.com/:f:/s/TEAMMARKETINGOPERATIONNEL/Er4Mtb4PmOVOiHfUrmX7-b8Bwr79GDa62NEd1Nr20ROSYQ?e=MJ6Ddh">
-            📁 Ouvrir le dossier Drive
-          </a>
-          <p>⏳ Veuillez patienter quelques instants...</p>
+          <div class="success-container">
+            <div class="success-icon">✨</div>
+            <div class="success-title">Image générée avec succès !</div>
+            <div class="success-message">Votre image a été créée et est maintenant disponible.</div>
+            
+            <div class="buttons-row">
+              <a href="${result.imageLink || '#'}" target="_blank" class="btn-primary">
+                🖼️ Voir l'image
+              </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="folder-info">
+              <div class="folder-info-title">📁 Retrouvez toutes vos images de la catégorie "${categoryName}"</div>
+              <a href="${categoryFolderLink}" target="_blank" class="btn-secondary">
+                📂 Accéder au dossier complet
+              </a>
+            </div>
+          </div>
+        `;
+
+      } catch (error) {
+        // Error fallback with same design
+        const categoryFolderLink = categoryLinks[selectedCategory];
+        const categoryName = categoryNames[selectedCategory];
+
+        resultContainer.innerHTML = `
+          <div class="success-container">
+            <div class="success-icon">⏳</div>
+            <div class="success-title">Image en cours de traitement</div>
+            <div class="success-message">Votre image est en cours de génération. Elle sera disponible dans quelques instants.</div>
+            
+            <div class="buttons-row">
+              <a href="${categoryFolderLink}" target="_blank" class="btn-primary">
+                📂 Accéder au dossier ${categoryName}
+              </a>
+            </div>
+          </div>
         `;
         console.error(error);
       }
