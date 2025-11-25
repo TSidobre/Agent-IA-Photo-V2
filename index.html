@@ -4,7 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Générateur d'images - Mon Chasseur Immo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      /* Palette Mon Chasseur Immo - Couleurs unies */
+      --mci-blue: #00385e;
+      --mci-cyan: #33eab5;
+      --mci-pink: #ff3859;
+      --mci-yellow: #ffd154;
+      /* Nouveau fond uni très clair */
+      --bg-color: #f4f8fb;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -12,8 +24,11 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 50%, #fff5f5 100%);
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      /* Motif subtil de points bleus unis au lieu de dégradés */
+      background-image: radial-gradient(var(--mci-blue) 0.5px, transparent 0.5px);
+      background-size: 30px 30px;
       min-height: 100vh;
       padding: 40px 20px;
       display: flex;
@@ -21,96 +36,69 @@
       justify-content: center;
       position: relative;
       overflow-x: hidden;
+      color: var(--mci-blue);
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(0, 56, 94, 0.03) 1px, transparent 1px);
-      background-size: 50px 50px;
-      animation: backgroundMove 20s linear infinite;
-      z-index: 0;
+    /* Conteneur pour les confettis */
+    #confetti-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none; z-index: 9999;
+        overflow: hidden;
+    }
+    .confetti {
+        position: absolute;
+        opacity: 0.9;
+    }
+    /* Couleurs des confettis */
+    .conf.c1 { background: var(--mci-blue); }
+    .conf.c2 { background: var(--mci-cyan); }
+    .conf.c3 { background: var(--mci-pink); }
+    .conf.c4 { background: var(--mci-yellow); }
+
+    @keyframes confettiFall {
+        0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
 
-    @keyframes backgroundMove {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(50px, 50px); }
-    }
 
     .container {
-      max-width: 700px;
+      max-width: 750px;
       width: 100%;
-      animation: containerFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       z-index: 1;
+      animation: fadeInUp 0.6s ease-out;
     }
 
-    @keyframes containerFadeIn {
-      from { 
-        opacity: 0; 
-        transform: translateY(30px) scale(0.95); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-      }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
       text-align: center;
-      color: #00385e;
-      margin-bottom: 40px;
+      color: var(--mci-blue);
+      margin-bottom: 30px;
       font-size: 2.2rem;
       font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0, 56, 94, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      animation: titleEntrance 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes titleEntrance {
-      0% { 
-        opacity: 0; 
-        transform: translateY(-30px) scale(0.8); 
-      }
-      60% {
-        transform: translateY(5px) scale(1.05);
-      }
-      100% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-      }
+      gap: 15px;
     }
 
     .logo-container {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 56, 94, 0.2);
-      animation: logoFloat 4s ease-in-out infinite;
-      transition: transform 0.3s ease;
+      /* Ombre bleue unie */
+      box-shadow: 0 5px 15px rgba(0, 56, 94, 0.2);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .logo-container:hover {
       transform: scale(1.1) rotate(5deg);
-    }
-
-    @keyframes logoFloat {
-      0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
-        box-shadow: 0 8px 25px rgba(0, 56, 94, 0.2);
-      }
-      50% { 
-        transform: translateY(-8px) rotate(2deg); 
-        box-shadow: 0 12px 35px rgba(0, 56, 94, 0.3);
-      }
     }
 
     .logo-container img {
@@ -119,47 +107,46 @@
       object-fit: cover;
     }
 
-    form {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      padding: 45px;
+    /* Wrapper avec les 4 couleurs unies en bordure (style "cadre") */
+    .form-wrapper {
+      position: relative;
       border-radius: 24px;
-      box-shadow: 
-        0 20px 60px rgba(0, 56, 94, 0.15),
-        0 0 0 1px rgba(0, 56, 94, 0.05);
-      transition: all 0.4s ease;
-      animation: formSlideIn 0.8s ease-out 0.2s backwards;
+      /* Application des 4 couleurs sur les 4 côtés séparément */
+      border-top: 5px solid var(--mci-blue);
+      border-right: 5px solid var(--mci-pink);
+      border-bottom: 5px solid var(--mci-cyan);
+      border-left: 5px solid var(--mci-yellow);
+      background: #fff;
+      padding: 5px; /* Espace entre la bordure colorée et le formulaire blanc */
+      box-shadow: 0 15px 50px rgba(0, 56, 94, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .form-wrapper:hover {
+        box-shadow: 0 20px 60px rgba(0, 56, 94, 0.15);
     }
 
-    @keyframes formSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    form:hover {
-      box-shadow: 
-        0 25px 70px rgba(0, 56, 94, 0.2),
-        0 0 0 1px rgba(0, 56, 94, 0.08);
+    form {
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
     }
 
     label {
-      font-weight: 600;
+      font-weight: 700;
       display: block;
       margin-top: 25px;
-      margin-bottom: 10px;
-      color: #00385e;
+      margin-bottom: 8px;
+      color: var(--mci-blue);
       font-size: 1rem;
-      transition: color 0.3s ease;
     }
 
-    label:first-of-type {
-      margin-top: 0;
+    .input-helper {
+      display: block;
+      font-size: 0.85rem;
+      color: #667;
+      margin-bottom: 12px;
+      font-style: italic;
     }
 
     select,
@@ -167,36 +154,38 @@
     input[type="file"],
     textarea {
       width: 100%;
-      padding: 14px 18px;
+      padding: 15px 18px;
       font-size: 15px;
       border-radius: 12px;
-      border: 2px solid #e0e8f0;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Bordure grise simple au repos */
+      border: 2px solid #dce4ec;
+      background: #f9fbff;
+      color: var(--mci-blue);
       font-family: inherit;
-      background: #fafcff;
+      transition: all 0.2s ease-in-out;
     }
 
-    select:hover,
-    input[type="text"]:hover,
-    textarea:hover {
-      border-color: #c0d5e8;
-      background: #fff;
-    }
-
+    /* Focus avec le bleu dominant uni */
     select:focus,
     input[type="text"]:focus,
     textarea:focus {
       outline: none;
-      border-color: #00385e;
-      box-shadow: 
-        0 0 0 4px rgba(0, 56, 94, 0.1),
-        0 4px 12px rgba(0, 56, 94, 0.15);
-      transform: translateY(-2px);
+      border-color: var(--mci-blue);
       background: #fff;
+      /* Anneau bleu uni */
+      box-shadow: 0 0 0 4px rgba(0, 56, 94, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    /* Survol simple */
+    select:hover,
+    input[type="text"]:hover,
+    textarea:hover {
+        border-color: #b0c4d8;
     }
 
     textarea {
-      min-height: 160px;
+      min-height: 150px;
       resize: vertical;
       line-height: 1.6;
     }
@@ -204,107 +193,84 @@
     input[type="file"] {
       padding: 12px;
       cursor: pointer;
-      background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+      background: #fff;
+      border: 2px dashed #dce4ec;
     }
-
     input[type="file"]:hover {
-      background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        border-color: var(--mci-blue);
+        background: #f0f7ff;
     }
 
     button {
       margin-top: 35px;
       padding: 18px;
       width: 100%;
-      background: linear-gradient(135deg, #00385e 0%, #e63946 100%);
+      /* BLEU UNI DOMINANT */
+      background: var(--mci-blue);
       color: white;
       border: none;
       border-radius: 14px;
       font-size: 18px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 
-        0 6px 20px rgba(0, 56, 94, 0.35),
-        0 2px 8px rgba(230, 57, 70, 0.2);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Animation "pop" */
+      box-shadow: 0 4px 15px rgba(0, 56, 94, 0.2);
       position: relative;
       overflow: hidden;
       letter-spacing: 0.5px;
     }
-
-    button::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s ease, height 0.6s ease;
-    }
-
-    button:hover::before {
-      width: 400px;
-      height: 400px;
-    }
+    
+    /* Suppression des effets de brillance dégradés */
+    button::before, button::after { display: none; }
 
     button:hover {
       transform: translateY(-4px) scale(1.02);
-      box-shadow: 
-        0 12px 35px rgba(0, 56, 94, 0.45),
-        0 6px 15px rgba(230, 57, 70, 0.3);
+      /* Bleu légèrement plus clair au survol */
+      background: #004a7a;
+      box-shadow: 0 10px 25px rgba(0, 56, 94, 0.3);
+      /* Ajout d'une petite bordure inférieure cyan au survol pour le peps */
+      border-bottom: 4px solid var(--mci-cyan);
     }
 
     button:active {
       transform: translateY(-2px) scale(1.01);
-    }
-
-    button span {
-      position: relative;
-      z-index: 1;
+      background: var(--mci-blue);
     }
 
     #result {
-      margin-top: 35px;
+      margin-top: 40px;
     }
 
-    /* Loading animation */
+    /* --- Loading animation --- */
     .loading-container {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      padding: 60px 45px;
+      background: #fff;
+      padding: 50px 45px;
       border-radius: 24px;
-      box-shadow: 
-        0 20px 60px rgba(0, 56, 94, 0.15),
-        0 0 0 1px rgba(0, 56, 94, 0.05);
+      /* Bordure bleue simple */
+      border: 3px solid rgba(0, 56, 94, 0.1);
+      box-shadow: 0 15px 40px rgba(0, 56, 94, 0.1);
       text-align: center;
-      animation: resultAppear 0.5s ease-out;
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    @keyframes resultAppear {
-      from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
 
+    /* VOTRE SPINNER (Couleurs unies en rotation) */
     .spinner {
-      width: 90px;
-      height: 90px;
+      width: 80px;
+      height: 80px;
       margin: 0 auto 35px;
-      border: 7px solid #f0f4f8;
-      border-top: 7px solid #00385e;
-      border-right: 7px solid #e63946;
-      border-bottom: 7px solid #00385e;
+      border: 6px solid transparent;
+      /* Utilisation des 4 couleurs unies */
+      border-top-color: var(--mci-blue);
+      border-right-color: var(--mci-pink);
+      border-bottom-color: var(--mci-cyan);
+      border-left-color: var(--mci-yellow);
       border-radius: 50%;
-      animation: 
-        spin 1.2s linear infinite,
-        spinPulse 2s ease-in-out infinite;
+      animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
@@ -312,300 +278,159 @@
       100% { transform: rotate(360deg); }
     }
 
-    @keyframes spinPulse {
-      0%, 100% { 
-        box-shadow: 0 0 0 0 rgba(0, 56, 94, 0.3);
-      }
-      50% { 
-        box-shadow: 0 0 0 15px rgba(0, 56, 94, 0);
-      }
-    }
-
     .loading-text {
-      font-size: 1.5rem;
-      color: #00385e;
+      font-size: 1.4rem;
+      color: var(--mci-blue);
       font-weight: 700;
-      margin-bottom: 18px;
-      animation: textPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes textPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(0.98); }
+      margin-bottom: 10px;
     }
 
     .loading-subtext {
-      color: #6b7280;
+      color: #667;
       font-size: 1.05rem;
-      line-height: 1.6;
     }
 
-    /* Success result */
+    /* --- Success result --- */
     .success-container {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      padding: 50px 45px;
+      background: #fff;
+      padding: 40px;
       border-radius: 24px;
-      box-shadow: 
-        0 20px 60px rgba(0, 56, 94, 0.15),
-        0 0 0 1px rgba(0, 56, 94, 0.05);
+      box-shadow: 0 20px 60px rgba(0, 56, 94, 0.15);
       text-align: center;
-      animation: successSlideUp 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      animation: slideUpSuccess 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* Petite touche de couleur unie en haut */
+      border-top: 5px solid var(--mci-cyan);
     }
 
-    @keyframes successSlideUp {
-      from { 
-        opacity: 0; 
-        transform: translateY(40px) scale(0.9); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-      }
+    @keyframes slideUpSuccess {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .success-icon {
-      width: 90px;
-      height: 90px;
-      margin: 0 auto 30px;
-      background: linear-gradient(135deg, #00385e 0%, #e63946 100%);
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 25px;
+      /* Couleur unie */
+      background: var(--mci-cyan);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3.5rem;
-      animation: 
-        iconScaleIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-        iconFloat 3s ease-in-out 1s infinite;
-      box-shadow: 
-        0 10px 30px rgba(0, 56, 94, 0.3),
-        0 0 0 0 rgba(0, 56, 94, 0.3);
+      font-size: 3rem;
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(51, 234, 181, 0.3);
+      animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-
-    @keyframes iconScaleIn {
-      0% { 
-        transform: scale(0) rotate(-180deg); 
-        opacity: 0;
-      }
-      60% { 
-        transform: scale(1.15) rotate(10deg); 
-      }
-      100% { 
-        transform: scale(1) rotate(0deg); 
-        opacity: 1;
-      }
-    }
-
-    @keyframes iconFloat {
-      0%, 100% { 
-        transform: translateY(0px); 
-      }
-      50% { 
-        transform: translateY(-8px); 
-      }
+    
+    @keyframes bounceIn {
+        0% { transform: scale(0); opacity: 0;}
+        60% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1;}
     }
 
     .success-title {
-      font-size: 2rem;
-      color: #00385e;
+      font-size: 1.8rem;
+      color: var(--mci-blue);
       font-weight: 700;
-      margin-bottom: 18px;
-      animation: titleFadeIn 0.6s ease-out 0.3s backwards;
-    }
-
-    @keyframes titleFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      margin-bottom: 15px;
     }
 
     .success-message {
-      color: #6b7280;
+      color: #556;
       font-size: 1.1rem;
-      margin-bottom: 35px;
-      line-height: 1.6;
-      animation: messageFadeIn 0.6s ease-out 0.5s backwards;
+      margin-bottom: 30px;
     }
 
-    @keyframes messageFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
+    /* Boutons de résultat (Unis) */
     .btn-primary {
-      display: inline-block;
-      padding: 16px 45px;
-      background: linear-gradient(135deg, #00385e 0%, #e63946 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 35px;
+      /* BLEU UNI */
+      background: var(--mci-blue);
       color: white;
       text-decoration: none;
-      border-radius: 14px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 1.1rem;
-      margin: 12px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 
-        0 6px 20px rgba(0, 56, 94, 0.35),
-        0 2px 8px rgba(230, 57, 70, 0.2);
-      position: relative;
-      overflow: hidden;
-      animation: buttonFadeIn 0.6s ease-out 0.7s backwards;
-    }
-
-    @keyframes buttonFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s ease, height 0.6s ease;
-    }
-
-    .btn-primary:hover::after {
-      width: 450px;
-      height: 450px;
+      margin: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 5px 15px rgba(0, 56, 94, 0.2);
     }
 
     .btn-primary:hover {
-      transform: translateY(-4px) scale(1.05);
-      box-shadow: 
-        0 12px 35px rgba(0, 56, 94, 0.45),
-        0 6px 15px rgba(230, 57, 70, 0.3);
-    }
-
-    .btn-primary span {
-      position: relative;
-      z-index: 1;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 56, 94, 0.3);
+      /* Changement de couleur uni au survol */
+      background: var(--mci-cyan); 
     }
 
     .btn-secondary {
-      display: inline-block;
-      padding: 16px 45px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 35px;
       background: #fff;
-      color: #00385e;
+      color: var(--mci-blue);
       text-decoration: none;
-      border-radius: 14px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 1.1rem;
-      margin: 12px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 3px solid #00385e;
-      box-shadow: 0 4px 12px rgba(0, 56, 94, 0.15);
-      animation: buttonFadeIn 0.6s ease-out 0.9s backwards;
+      margin: 10px;
+      transition: all 0.2s ease;
+      /* Bordure bleue unie */
+      border: 2px solid var(--mci-blue);
     }
 
     .btn-secondary:hover {
-      background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
-      transform: translateY(-4px) scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 56, 94, 0.25);
-      border-color: #e63946;
-      color: #e63946;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 56, 94, 0.1);
+      background: #f0f7ff;
     }
 
     .divider {
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(90deg, #00385e 0%, #e63946 100%);
-      margin: 30px auto;
-      border-radius: 3px;
-      animation: dividerExpand 1s ease-out 1s backwards;
-    }
-
-    @keyframes dividerExpand {
-      from { 
-        width: 0; 
-        opacity: 0; 
-      }
-      to { 
-        width: 80px; 
-        opacity: 1; 
-      }
+      height: 2px;
+      /* Ligne bleue unie */
+      background: #e0e8f0;
+      margin: 35px auto;
+      width: 60%;
+      border-radius: 2px;
     }
 
     .folder-info {
-      margin-top: 30px;
+      margin-top: 25px;
       padding: 25px;
-      background: linear-gradient(135deg, rgba(0, 56, 94, 0.06) 0%, rgba(230, 57, 70, 0.06) 100%);
+      background: #f8fbff;
       border-radius: 16px;
-      border-left: 5px solid #00385e;
-      box-shadow: 0 4px 15px rgba(0, 56, 94, 0.08);
-      animation: folderSlideIn 0.6s ease-out 1.2s backwards;
-    }
-
-    @keyframes folderSlideIn {
-      from { 
-        opacity: 0; 
-        transform: translateY(25px); 
-      }
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      }
+      border: 2px solid #e0e8f0;
+      /* Bordure gauche unie */
+      border-left: 5px solid var(--mci-blue);
     }
 
     .folder-info-title {
-      font-size: 1.05rem;
-      color: #00385e;
+      font-size: 1.1rem;
+      color: var(--mci-blue);
       font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .buttons-row {
-      margin-top: 25px;
+      margin-bottom: 15px;
     }
 
     /* Responsive */
     @media (max-width: 640px) {
-      h1 {
-        font-size: 1.6rem;
-        flex-direction: column;
-        gap: 15px;
-      }
-
-      .logo-container {
-        width: 50px;
-        height: 50px;
-      }
-
-      form {
-        padding: 30px 25px;
-      }
-
-      .btn-primary,
-      .btn-secondary {
-        display: block;
-        margin: 12px 0;
-        padding: 14px 30px;
-      }
+      body { padding: 20px 10px; }
+      h1 { font-size: 1.7rem; flex-direction: column; }
+      form { padding: 25px; }
+      .btn-primary, .btn-secondary { display: flex; width: 100%; margin: 10px 0; }
+      .form-wrapper { border-width: 3px; } /* Bordures plus fines sur mobile */
     }
   </style>
 </head>
 <body>
+  <div id="confetti-container"></div>
+
   <div class="container">
     <h1>
       <div class="logo-container">
@@ -614,59 +439,101 @@
       Générateur d'images IA
     </h1>
 
-    <form id="imageForm">
-      <label for="categorie">Catégorie d'image :</label>
-      <select id="categorie" name="categorie" required>
-        <option value="">-- Choisir une catégorie --</option>
-        <option value="interieur">🏠 Intérieur</option>
-        <option value="humain">👤 Humain</option>
-        <option value="objet3d">🧩 Objet 3D</option>
-        <option value="branding">🌟 Transformer en image de marque</option>
-        <option value="article">📝 Génération d'article</option>
-        <option value="autre">✨ Autre</option>
-      </select>
-
-      <div id="imageUploadContainer" style="display: none;">
-        <label for="imageUpload">Joindre une image :</label>
-        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
-      </div>
-
-      <div id="descriptionContainer">
-        <label for="description">Description de l'image :</label>
-        <input type="text" id="description" name="description" placeholder="Ex. Un salon lumineux avec parquet clair" />
-      </div>
-
-      <div id="articleContainer" style="display: none;">
-        <label for="articleComplet">Article au complet :</label>
-        <textarea id="articleComplet" name="articleComplet" placeholder="Saisissez votre article complet ici..."></textarea>
-      </div>
-
-      <div id="backgroundColorContainer" style="display: none;">
-        <label for="backgroundColor">Choix de la couleur du fond :</label>
-        <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Beige clair, bleu pastel..." />
-      </div>
-
-      <div id="formatContainer">
-        <label for="format">Format souhaité :</label>
-        <select id="format" name="format">
-          <option value="1:1">Carré (1:1)</option>
-          <option value="9:16">Vertical (9:16)</option>
-          <option value="16:9">Horizontal (16:9)</option>
+    <div class="form-wrapper">
+      <form id="imageForm">
+        <label for="categorie">Catégorie d'image <span style="color: var(--mci-pink)">*</span></label>
+        <select id="categorie" name="categorie" required>
+          <option value="">-- Sélectionner le type de création --</option>
+          <option value="interieur">🏠 Intérieur & Architecture</option>
+          <option value="humain">👤 Humain & Portrait pro</option>
+          <option value="objet3d">🧩 Objet 3D & Illustration</option>
+          <option value="branding">🌟 Transformation en image de marque</option>
+          <option value="article">📝 Génération d'article de blog</option>
+          <option value="autre">✨ Autre créativité</option>
         </select>
-      </div>
-
-      <div id="cibleContainer">
-        <label for="cible">Cible ou contexte :</label>
-        <input type="text" id="cible" name="cible" placeholder="Ex. Publication Instagram, plaquette, etc." />
-      </div>
-
-      <button type="submit"><span>🚀 Générer l'image</span></button>
-    </form>
+  
+        <div id="imageUploadContainer" style="display: none;">
+          <label for="imageUpload">Image de référence :</label>
+          <span class="input-helper">Joignez l'image que vous souhaitez transformer.</span>
+          <input type="file" id="imageUpload" name="imageUpload" accept="image/*" />
+        </div>
+  
+        <div id="descriptionContainer">
+          <label for="description">Votre Prompt (Description détaillée) :</label>
+          <span class="input-helper">Soyez précis sur le style, la lumière et les éléments clés. (Ex: "Salon lumineux style scandinave, canapé bleu canard, parquet chêne clair, photo réaliste")</span>
+          <input type="text" id="description" name="description" placeholder="Décrivez précisément le résultat souhaité..." />
+        </div>
+  
+        <div id="articleContainer" style="display: none;">
+          <label for="articleComplet">Contenu de l'article :</label>
+          <textarea id="articleComplet" name="articleComplet" placeholder="Collez votre texte ici..."></textarea>
+        </div>
+  
+        <div id="backgroundColorContainer" style="display: none;">
+          <label for="backgroundColor">Couleur d'arrière-plan :</label>
+          <input type="text" id="backgroundColor" name="backgroundColor" placeholder="Ex. Blanc cassé, #f0f0f0..." />
+        </div>
+  
+        <div id="formatContainer">
+          <label for="format">Format de sortie :</label>
+          <select id="format" name="format">
+            <option value="1:1">Carré (1:1) - Réseaux sociaux</option>
+            <option value="9:16">Vertical (9:16) - Story/Reels</option>
+            <option value="16:9">Horizontal (16:9) - Bannière/Blog</option>
+            <option value="4:3">Classique (4:3)</option>
+          </select>
+        </div>
+  
+        <div id="cibleContainer">
+          <label for="cible">Contexte d'utilisation :</label>
+          <input type="text" id="cible" name="cible" placeholder="Ex. Post LinkedIn, Bannière site web..." />
+        </div>
+  
+        <button type="submit"><span>Lancer la création</span></button>
+      </form>
+    </div>
 
     <div id="result"></div>
   </div>
 
   <script>
+    // --- FONCTION POUR LES CONFETTIS ---
+    function launchConfetti() {
+        const container = document.getElementById('confetti-container');
+        container.innerHTML = ''; // Nettoyer les anciens confettis
+
+        const colors = ['c1', 'c2', 'c3', 'c4']; // Les 4 couleurs définies en CSS
+
+        for (let i = 0; i < 150; i++) { // Créer 150 confettis
+            const conf = document.createElement('div');
+            conf.classList.add('confetti', 'conf', colors[Math.floor(Math.random() * colors.length)]);
+
+            // Position et taille aléatoires
+            conf.style.left = Math.random() * 100 + 'vw';
+            conf.style.width = (Math.random() * 10 + 5) + 'px';
+            conf.style.height = (Math.random() * 10 + 5) + 'px';
+            
+            // Animation aléatoire
+            conf.style.animationName = 'confettiFall';
+            conf.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Durée entre 2s et 5s
+            conf.style.animationDelay = Math.random() * 0.5 + 's'; // Léger délai de départ
+
+            // Formes aléatoires (carrés ou ronds)
+            if(Math.random() > 0.5) {
+                 conf.style.borderRadius = '50%';
+            }
+
+            container.appendChild(conf);
+        }
+
+        // Nettoyage du conteneur après 6 secondes (fin de l'animation)
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 6000);
+    }
+
+
+    // --- RESTE DU SCRIPT (Similaire au précédent) ---
     const categorieSelect = document.getElementById("categorie");
     const imageUploadContainer = document.getElementById("imageUploadContainer");
     const imageUploadInput = document.getElementById("imageUpload");
@@ -689,25 +556,21 @@
     const categoryNames = {
       "article": "Génération d'articles",
       "branding": "Images de marque",
-      "humain": "Humains",
-      "interieur": "Intérieurs",
+      "humain": "Humains & Portraits",
+      "interieur": "Intérieurs & Architecture",
       "objet3d": "Objets 3D",
-      "autre": "Autres générations"
+      "autre": "Autres créations"
     };
 
     categorieSelect.addEventListener("change", function () {
       const value = categorieSelect.value;
-
       imageUploadContainer.style.display = value === "branding" ? "block" : "none";
       imageUploadInput.required = value === "branding";
-
       descriptionContainer.style.display = (value === "branding" || value === "article") ? "none" : "block";
-
+       if(value === "branding" || value === "article") { document.getElementById("description").required = false; }
       articleContainer.style.display = value === "article" ? "block" : "none";
       articleCompletInput.required = value === "article";
-
       backgroundColorContainer.style.display = value === "objet3d" ? "block" : "none";
-
       formatContainer.style.display = value === "article" ? "none" : "block";
       cibleContainer.style.display = value === "article" ? "none" : "block";
     });
@@ -718,69 +581,67 @@
       const form = e.target;
       const formData = new FormData(form);
       const selectedCategory = categorieSelect.value;
-
       const resultContainer = document.getElementById("result");
       
       // Loading state
       resultContainer.innerHTML = `
         <div class="loading-container">
           <div class="spinner"></div>
-          <div class="loading-text">Génération en cours...</div>
-          <div class="loading-subtext">L'IA crée votre image personnalisée. Cela peut prendre quelques instants.</div>
+          <div class="loading-text">Création en cours...</div>
+          <div class="loading-subtext">L'intelligence artificielle compose votre image.</div>
         </div>
       `;
 
       const webhookUrl = "https://hook.eu1.make.com/4g83ofxhrb50jijxk9xurp7ffogba87m";
 
       try {
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          body: formData
-        });
-
+        const response = await fetch(webhookUrl, { method: "POST", body: formData });
         const result = await response.json();
         
+        // --- LANCEMENT DES CONFETTIS AU SUCCÈS ---
+        launchConfetti();
+
         // Success state
         const categoryFolderLink = categoryLinks[selectedCategory];
         const categoryName = categoryNames[selectedCategory];
 
         resultContainer.innerHTML = `
           <div class="success-container">
-            <div class="success-icon">✨</div>
+            <div class="success-icon">✓</div>
             <div class="success-title">Image générée avec succès !</div>
-            <div class="success-message">Votre image a été créée et est maintenant disponible.</div>
+            <div class="success-message">Votre création est prête.</div>
             
             <div class="buttons-row">
               <a href="${result.imageLink || '#'}" target="_blank" class="btn-primary">
-                <span>🖼️ Voir l'image</span>
+                👀 Voir le résultat
               </a>
             </div>
 
             <div class="divider"></div>
 
             <div class="folder-info">
-              <div class="folder-info-title">📁 Retrouvez toutes vos images de la catégorie "${categoryName}"</div>
+              <div class="folder-info-title">📁 Dossier "${categoryName}"</div>
               <a href="${categoryFolderLink}" target="_blank" class="btn-secondary">
-                📂 Accéder au dossier complet
+                Accéder au dossier Sharepoint
               </a>
             </div>
           </div>
         `;
 
       } catch (error) {
-        // Error fallback with same design
+        // Error fallback
         const categoryFolderLink = categoryLinks[selectedCategory];
         const categoryName = categoryNames[selectedCategory];
 
         resultContainer.innerHTML = `
-          <div class="success-container">
-            <div class="success-icon">⏳</div>
-            <div class="success-title">Image en cours de traitement</div>
-            <div class="success-message">Votre image est en cours de génération. Elle sera disponible dans quelques instants.</div>
+          <div class="success-container" style="border-top-color: var(--mci-yellow);">
+            <div class="success-icon" style="background: var(--mci-yellow); font-size: 2.5rem;">⏳</div>
+            <div class="success-title">Traitement long</div>
+            <div class="success-message">La génération prend du temps. Votre image arrivera bientôt dans le dossier.</div>
             
             <div class="buttons-row">
-              <a href="${categoryFolderLink}" target="_blank" class="btn-primary">
-                <span>📂 Accéder au dossier ${categoryName}</span>
+              <a href="${categoryFolderLink}" target="_blank" class="btn-secondary">
+                📂 Ouvrir le dossier
               </a>
             </div>
           </div>
